@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy
-
+import math
+import os
 
 class Picture:  
     def __init__(self, filename): 
@@ -13,7 +14,6 @@ class Picture:
         green = 0
         blue = 0
         im = Image.open(self.filename)
-        print("Old photo size: ", im.size)
         width, height = im.size
         pixel_values = list(im.getdata())
         size = min(width, height)
@@ -34,7 +34,6 @@ class Picture:
         avg_red = avg_red // (size * size)
         avg_blue = avg_blue // (size * size)
         avg_green = avg_green // (size * size)
-        print("RGB: ", avg_red, " ", avg_green, " ", avg_blue)
         return Pixel(avg_red, avg_green, avg_blue)
 
 class Pixel: 
@@ -49,7 +48,44 @@ def compile_source_file_data(source_files):
     for file in source_files: 
         source_pictures.append(Picture(file))
 
-def process_picture():
-    #compile_source_file_data(source_files)
-    p = Picture("images/Australian-Shepherd.jpg")
-    print("Hello world!!")
+def find_nearest_image(red, green, blue):
+    min_distance = 100000000000000
+    filename = ""
+    for pic in source_pictures: 
+        distance = math.sqrt((red - pic.pixel.red)**2 + (green - pic.pixel.green)**2 + (blue - pic.pixel.blue)**2)
+        if distance < min_distance: 
+            min_distance = distance
+            filename = pic.filename
+    return filename
+
+def generate_mosaic(picture_path):
+    im = Image.open(picture_path)
+    old_width, old_height = im.size
+    im.thumbnail(100, 100)
+    im.save("pixelated_photo.jpg") 
+    width, height = im.size
+    stock_im_width = old_width // width
+    stock_im_height = old_height // height
+    pixel_values = list(im.getdata())
+    pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
+    im.resize(width * stock_im_width, height * stock_im_height)
+    im.save("pixelated_photo.jpg")
+    
+    for h in range(width):
+        for w in range(height):
+            red = pixel_values[w][h][0]
+            green = pixel_values[w][h][1]
+            blue = pixel_values[w][h][2]
+            replacement = find_nearest_image(red, green, blue) #returns filename of best image
+            repl_photo = Image.open(replacement)
+            repl_photo.resize(stock_im_width, stock_im_height)
+            im.paste(repl_photo, (w * stock_im_width, h * stock_im_height)) # Todo: fix the w and h offsets
+
+            
+
+def process_picture(target, source_dir):
+    print("Generating picture mosaic...")
+    source_files = os.listdir(source_dir)
+    compile_source_file_data(source_files)
+    generate_mosaic(target)
+    print("Picture mosaic generated!")
