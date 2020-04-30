@@ -22,12 +22,20 @@ class Picture:
         cropped_image.save(self.filename)
         
         pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
-        print("New photo size: ", cropped_image.size)
+        avg_red = 0
+        avg_blue = 0
+        avg_green = 0
         for x in range(size): 
             for y in range(size):
-                print(pixel_values[x][y], end=" ")
-            print("")
-        return Pixel(red, green, blue)
+                red, green, blue = pixel_values[x][y]
+                avg_red += red
+                avg_green += green
+                avg_blue += blue
+        avg_red = avg_red // (size * size)
+        avg_blue = avg_blue // (size * size)
+        avg_green = avg_green // (size * size)
+        print("RGB: ", avg_red, " ", avg_green, " ", avg_blue)
+        return Pixel(avg_red, avg_green, avg_blue)
 
 class Pixel: 
     def __init__(self, red, green, blue): 
