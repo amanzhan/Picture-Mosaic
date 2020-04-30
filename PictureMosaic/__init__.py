@@ -1,0 +1,2 @@
+from PictureMosaic.picture_processor import process_picture
+
