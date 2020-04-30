@@ -13,7 +13,8 @@ setup(
         'requests==2.22.0',
         'selenium==3.141.0',
         'sh==1.12.14',
-        'Pillow==7.1.2' 
+        'Pillow==7.1.2',
+        'numpy==1.18.3',
     ],
     entry_points={
         'console_scripts': [
