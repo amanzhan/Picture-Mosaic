@@ -13,15 +13,22 @@ class Picture:
         red = 0
         green = 0
         blue = 0
-        im = Image.open(self.filename)
+        try:
+            im = Image.open(self.filename)
+        except:
+            return Pixel(-999999999, -999999999, -999999999)
         width, height = im.size
         pixel_values = list(im.getdata())
         size = min(width, height)
         box = (width // 2 - size // 2, height // 2 - size // 2, width // 2 + size // 2, height // 2 + size // 2) 
         cropped_image = im.crop(box)
         cropped_image.save(self.filename)
-        
-        pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
+        if im.mode == 'RGB':
+            channels = 3
+        else:
+            im.convert(mode='RGB')
+            channels = 3
+        pixel_values = numpy.array(pixel_values).reshape((width, height, channels))
         avg_red = 0
         avg_blue = 0
         avg_green = 0
@@ -46,7 +53,7 @@ source_pictures = []
 
 def compile_source_file_data(source_files):
     for file in source_files: 
-        source_pictures.append(Picture(file))
+        source_pictures.append(Picture("source/" + file))
 
 def find_nearest_image(red, green, blue):
     min_distance = 100000000000000
