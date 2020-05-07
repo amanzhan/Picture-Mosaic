@@ -2,6 +2,10 @@ from PIL import Image
 import numpy
 import math
 import os
+import progressbar
+
+bar = progressbar.ProgressBar(max_value=2000)
+counter = 1
 
 class Picture:  
     def __init__(self, filename): 
@@ -10,6 +14,9 @@ class Picture:
         self.pixel = self.find_average_rgb()
    
     def find_average_rgb(self):
+        global counter
+        bar.update(counter)
+        counter += 1
         red = 0
         green = 0
         blue = 0
@@ -18,17 +25,19 @@ class Picture:
         except:
             return Pixel(-999999999, -999999999, -999999999)
         width, height = im.size
-        pixel_values = list(im.getdata())
         size = min(width, height)
         box = (width // 2 - size // 2, height // 2 - size // 2, width // 2 + size // 2, height // 2 + size // 2) 
         cropped_image = im.crop(box)
         cropped_image.save(self.filename)
-        if im.mode == 'RGB':
-            channels = 3
-        else:
-            im.convert(mode='RGB')
-            channels = 3
-        pixel_values = numpy.array(pixel_values).reshape((width, height, channels))
+        if im.mode != 'RGB':
+            im = im.convert(mode='RGB')
+        try:
+            pixel_values = list(im.getdata())
+            pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
+        except:
+            print(self.filename)
+            print(im.mode)
+            exit(1)
         avg_red = 0
         avg_blue = 0
         avg_green = 0

@@ -15,6 +15,7 @@ setup(
         'sh==1.12.14',
         'Pillow==7.1.2',
         'numpy==1.18.3',
+        'progressbar2==3.51.3',
     ],
     entry_points={
         'console_scripts': [
