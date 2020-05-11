@@ -3,6 +3,7 @@ import numpy
 import math
 import os
 import progressbar
+import uuid
 
 bar = progressbar.ProgressBar(max_value=2000)
 counter = 1
@@ -103,11 +104,12 @@ def generate_mosaic(picture_path):
             repl_photo = repl_photo.resize((100, 100))
             final_im.paste(repl_photo, (w * 100, h * 100)) # Todo: fix the w and h offsets
     global results_counter
-    mosaic_pic = str(results_counter) + ".jpg"
-    path = os.path.join("results", mosaic_pic)
+    # mosaic_pic = str(results_counter) + ".jpg"
+    random_name = str(uuid.uuid4().hex) + ".jpg"
+    path = os.path.join("results", random_name)
     final_im.save(path)     
-    results_counter +=1
-    return mosaic_pic  
+    # results_counter +=1
+    return random_name  
             
 
 def process_picture(target, source_dir):
