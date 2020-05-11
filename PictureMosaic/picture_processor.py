@@ -6,6 +6,7 @@ import progressbar
 
 bar = progressbar.ProgressBar(max_value=2000)
 counter = 1
+results_counter = 0
 
 class Picture:  
     def __init__(self, filename): 
@@ -77,26 +78,36 @@ def find_nearest_image(red, green, blue):
 def generate_mosaic(picture_path):
     im = Image.open(picture_path)
     old_width, old_height = im.size
-    im.thumbnail(100, 100)
+    im.thumbnail((70, 70))
     im.save("pixelated_photo.jpg") 
     width, height = im.size
+    print("w: ", width, " h: ", height)
     stock_im_width = old_width // width
     stock_im_height = old_height // height
+    print("stock_im_width:", stock_im_width)
+    print("stock_im_height:", stock_im_height)
+    pixels = im.load()
     pixel_values = list(im.getdata())
     pixel_values = numpy.array(pixel_values).reshape((width, height, 3))
-    im.resize(width * stock_im_width, height * stock_im_height)
-    im.save("pixelated_photo.jpg")
-    
-    for h in range(width):
-        for w in range(height):
-            red = pixel_values[w][h][0]
-            green = pixel_values[w][h][1]
-            blue = pixel_values[w][h][2]
+    final_im = Image.new('RGB', (100*width, 100*height))
+    for w in range(width):
+        for h in range(height):
+            red = pixels[w, h][0]
+            green = pixels[w, h][1]
+            blue = pixels[w, h][2]
+            #red = pixel_values[h][w][0]
+            #green = pixel_values[h][w][1]
+            #blue = pixel_values[h][w][2]
             replacement = find_nearest_image(red, green, blue) #returns filename of best image
             repl_photo = Image.open(replacement)
-            repl_photo.resize(stock_im_width, stock_im_height)
-            im.paste(repl_photo, (w * stock_im_width, h * stock_im_height)) # Todo: fix the w and h offsets
-
+            repl_photo = repl_photo.resize((100, 100))
+            final_im.paste(repl_photo, (w * 100, h * 100)) # Todo: fix the w and h offsets
+    global results_counter
+    mosaic_pic = str(results_counter) + ".jpg"
+    path = os.path.join("results", mosaic_pic)
+    final_im.save(path)     
+    results_counter +=1
+    return mosaic_pic  
             
 
 def process_picture(target, source_dir):
