@@ -13,7 +13,7 @@ setup(
         'requests==2.22.0',
         'selenium==3.141.0',
         'sh==1.12.14',
-        'Pillow==7.1.2',
+        'Pillow==9.0.0',
         'numpy==1.18.3',
         'progressbar2==3.51.3',
     ],
