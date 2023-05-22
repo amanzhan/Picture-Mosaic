@@ -10,7 +10,7 @@ setup(
         'bs4==0.0.1',
         'Flask==1.1.1',
         'nodeenv==1.3.5',
-        'requests==2.22.0',
+        'requests==2.31.0',
         'selenium==3.141.0',
         'sh==1.12.14',
         'Pillow==7.1.2',
